@@ -3,6 +3,18 @@
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
+	<Button
+		android:id="@+id/button_open"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/button_open"
+		android:layout_gravity="center" />
+	<TextView
+		android:id="@+id/text_sensor"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:textSize="32sp"
+		android:text="@string/app_name" />
 	<com.hide_ab.Oekaki.PictView
 		android:id="@+id/vw_canvas"
 		android:layout_width="fill_parent"

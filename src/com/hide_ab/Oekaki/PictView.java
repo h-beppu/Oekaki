@@ -25,7 +25,7 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 	private float stty = 0.0f;	// 初回のY座標
 	private float rr = -1;
 	private float centerx, centery;
-	private final int REPEAT_INTERVAL = 50;
+	private final int REPEAT_INTERVAL = 5;
 	private final int BRUSH_SIZE = 4;
 
 	public final static int MODE_LINE = 0,
@@ -311,7 +311,9 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 			if(canvas != null) {
 				// 描画バッファのデータを書き出し
 				canvas.drawBitmap(bmp, 0, 0, null);
-				canvas.drawBitmap(bmp2, 0, 0, null);
+				if((mode == MODE_CIRCLE) || (mode == MODE_RECT)) {
+					canvas.drawBitmap(bmp2, 0, 0, null);
+				}
 				// Canvasの解放
 				holder.unlockCanvasAndPost(canvas);
 			}

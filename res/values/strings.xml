@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">Oekaki</string>
+	<string name="app_name">おえかき</string>
+	<string name="menu_item0">けす</string>
+	<string name="menu_item1">おわる</string>
+	<string name="label_red">あか</string>
+	<string name="label_black">くろ</string>
+	<string name="button_open">Open</string>
+	<string name="button_close">Close</string>
+	<string name="activity_animation_duration">300</string>
 </resources>

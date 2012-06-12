@@ -1,14 +1,28 @@
 package com.hide_ab.Oekaki;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
 
-public class OekakiActivity extends Activity {
+public class OekakiActivity extends Activity implements SensorEventListener {
+	//センサーマネージャー
+	private SensorManager mSensorManager;
+
 	private PictView pview = null;
 	// メニューアイテムID
 	private static final int
@@ -37,6 +51,58 @@ public class OekakiActivity extends Activity {
 		super.onCreate(savedInstanceState);
 //		setContentView(new PictView(this));
 		setContentView(R.layout.main);
+
+		//センサーサービス取得
+		mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+
+		Button openBtn = (Button)findViewById(R.id.button_open);
+		openBtn.setOnClickListener(new OnClickListener(){
+			public void onClick(View v) {
+				Intent intent = new Intent(OekakiActivity.this, SettingActivity.class);
+				startActivity(intent);
+			}});
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+		if(sensors.size() > 0) {
+			Sensor sensor = sensors.get(0);
+			boolean mRegisteredSensor = mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+	    //センサーマネージャのリスナ登録破棄
+    	mSensorManager.unregisterListener(this);
+	}
+
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+	}
+
+	/**
+	* センサーイベント
+	*/
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+			String str =
+			String.valueOf(event.values[0]) + ", " +
+			String.valueOf(event.values[1]) + ", " +
+			String.valueOf(event.values[2]);
+
+			TextView tv = (TextView)findViewById(R.id.text_sensor);
+			tv.setText(str);
+			if(Math.abs(event.values[0]) > 5) {
+				Intent intent = new Intent(OekakiActivity.this, SettingActivity.class);
+				startActivity(intent);
+			}
+		}
 	}
 
 	@Override
