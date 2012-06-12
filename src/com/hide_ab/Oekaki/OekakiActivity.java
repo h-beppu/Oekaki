@@ -15,7 +15,8 @@ public class OekakiActivity extends Activity {
 		MENU_ITEM0 = 0,
 		MENU_ITEM1 = 1,
 		MENU_ITEM2 = 2,
-		MENU_ITEM3 = 3;
+		MENU_ITEM3 = 3,
+		MENU_ITEM4 = 4;
 
 	// set default value
 	String[] str_colors = {"くろ", "しろ", "はいいろ", "あか", "みどり", "あお", "きいろ", "みずいろ", "むらさき"};
@@ -23,8 +24,12 @@ public class OekakiActivity extends Activity {
 	int result_color;
 
 	String[] str_sizes = {"とてもほそい", "ほそい", "ふつう", "ふとい", "とてもふとい"};
-	int[] sizes = {1, 2, 4, 8, 16};
+	int[] sizes = {1, 2, 4, 16, 32};
 	int result_size;
+
+	String[] str_modes = {"せん", "まる", "しかく"};
+	int[] modes = {PictView.MODE_LINE, PictView.MODE_CIRCLE, PictView.MODE_RECT};
+	int result_mode;
 
 	// アクティビティが生成されたときに呼び出されるメソッド
 	@Override
@@ -41,11 +46,13 @@ public class OekakiActivity extends Activity {
 		MenuItem item0 = menu.add(Menu.NONE, MENU_ITEM0, Menu.NONE, "けす");
 		item0.setIcon(android.R.drawable.ic_menu_delete);
 		MenuItem item1 = menu.add(Menu.NONE, MENU_ITEM1, Menu.NONE, "いろ");
-		item1.setIcon(android.R.drawable.ic_menu_add);
+		item1.setIcon(android.R.drawable.ic_menu_edit);
 		MenuItem item2 = menu.add(Menu.NONE, MENU_ITEM2, Menu.NONE, "ふとさ");
-		item2.setIcon(android.R.drawable.ic_menu_add);
-		MenuItem item3 = menu.add(Menu.NONE, MENU_ITEM3, Menu.NONE, "もどす");
-		item3.setIcon(android.R.drawable.ic_menu_add);
+		item2.setIcon(android.R.drawable.ic_menu_edit);
+		MenuItem item3 = menu.add(Menu.NONE, MENU_ITEM3, Menu.NONE, "かたち");
+		item3.setIcon(android.R.drawable.ic_menu_edit);
+		MenuItem item4 = menu.add(Menu.NONE, MENU_ITEM4, Menu.NONE, "もどす");
+		item4.setIcon(android.R.drawable.ic_menu_revert);
 
 		return true;
 	}
@@ -112,14 +119,42 @@ public class OekakiActivity extends Activity {
 					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
 						/* Cancel ボタンをクリックした時の処理 */
 						public void onClick(DialogInterface dialog, int whichButton) {
-							new AlertDialog.Builder(OekakiActivity.this)
-								.setTitle("Canceled")
-								.show();
+//							new AlertDialog.Builder(OekakiActivity.this)
+//								.setTitle("Canceled")
+//								.show();
 						}
 					})
 					.show();
 				break;
 			case MENU_ITEM3:
+				// Single Choice Dialog
+				new AlertDialog.Builder(this)
+					.setIcon(R.drawable.icon)
+					.setTitle("かたちをえらんでね")
+					.setSingleChoiceItems(str_modes, result_mode,
+						new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+								result_mode = which;
+							}
+						})
+					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+						/* OKボタンをクリックした時の処理 */
+						public void onClick(DialogInterface dialog, int whichButton) {
+							int mode = modes[result_mode];
+							OekakiActivity.this.pview.SetMode(mode);
+						}
+					})
+					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+						/* Cancel ボタンをクリックした時の処理 */
+						public void onClick(DialogInterface dialog, int whichButton) {
+//							new AlertDialog.Builder(OekakiActivity.this)
+//								.setTitle("Canceled")
+//								.show();
+						}
+					})
+					.show();
+				break;
+			case MENU_ITEM4:
 				this.pview.Undo();
 				break;
 		}
