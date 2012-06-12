@@ -47,8 +47,8 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 		paint = new Paint();
 		// アンチエイリアスを有効にする
 		paint.setAntiAlias(true);
-		// 白色、透明度100
-		paint.setColor(Color.WHITE);
+		// 黒色、透明度100
+		paint.setColor(Color.BLACK);
 //		paint.setColor(Color.argb(100, 0, 0, 255));
 		// 線のみ(塗りつぶさない)
 		paint.setStyle(Paint.Style.STROKE);
@@ -66,6 +66,7 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 		super.onSizeChanged(w, h, oldw, oldh);
 		bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
 		bmpCanvas = new Canvas(bmp);
+		bmpCanvas.drawColor(Color.WHITE);
 	}
 
 	@Override
@@ -134,8 +135,17 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 	public void Clear() {
 		// 描画バッファにパスを描画する
 		if(path != null) {
-			bmpCanvas.drawRGB(0, 0, 0);
+//			bmpCanvas.drawRGB(255, 0, 0);
+			bmpCanvas.drawColor(Color.WHITE);
 		}
+	}
+
+	public void SetColor(int color) {
+		paint.setColor(color);
+	}
+
+	public void SetSize(int size) {
+		paint.setStrokeWidth(size);
 	}
 
 	@Override
