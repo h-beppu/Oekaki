@@ -14,7 +14,8 @@ public class OekakiActivity extends Activity {
 	private static final int
 		MENU_ITEM0 = 0,
 		MENU_ITEM1 = 1,
-		MENU_ITEM2 = 2;
+		MENU_ITEM2 = 2,
+		MENU_ITEM3 = 3;
 
 	// set default value
 	String[] str_colors = {"‚­‚ë", "‚µ‚ë", "‚Í‚¢‚¢‚ë", "‚ ‚©", "‚Ý‚Ç‚è", "‚ ‚¨", "‚«‚¢‚ë", "‚Ý‚¸‚¢‚ë", "‚Þ‚ç‚³‚«"};
@@ -43,6 +44,8 @@ public class OekakiActivity extends Activity {
 		item1.setIcon(android.R.drawable.ic_menu_add);
 		MenuItem item2 = menu.add(Menu.NONE, MENU_ITEM2, Menu.NONE, "‚Ó‚Æ‚³");
 		item2.setIcon(android.R.drawable.ic_menu_add);
+		MenuItem item3 = menu.add(Menu.NONE, MENU_ITEM3, Menu.NONE, "‚à‚Ç‚·");
+		item3.setIcon(android.R.drawable.ic_menu_add);
 
 		return true;
 	}
@@ -115,6 +118,9 @@ public class OekakiActivity extends Activity {
 						}
 					})
 					.show();
+				break;
+			case MENU_ITEM3:
+				this.pview.Undo();
 				break;
 		}
 

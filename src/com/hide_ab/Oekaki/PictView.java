@@ -30,6 +30,7 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 	private Paint paint = null;			// 描画用
 	private Bitmap bmp = null;
 	private Canvas bmpCanvas;
+	private Bitmap bmpUndo = null;
 
 	private static final String LOG = "MainSurfaceView";
 
@@ -101,12 +102,15 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 				path = new Path();
 				// パスの始点へ移動
 				path.moveTo(posx, posy);
+				// 現状の保存
+				bmpUndo = bmp.copy(Bitmap.Config.ARGB_8888, false);
 				break;
 			case MotionEvent.ACTION_MOVE:	//途中のポイント
 				// ひとつ前のポイントから線を引く
 				path.lineTo(posx, posy);
 				break;
 			case MotionEvent.ACTION_UP:		//最後のポイント
+
 				// 点を打つ
 				if((posx == bakx) && (posy == baky)) {
 					bmpCanvas.drawPoint(posx, posy, paint);
@@ -133,11 +137,7 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 	}
 
 	public void Clear() {
-		// 描画バッファにパスを描画する
-		if(path != null) {
-//			bmpCanvas.drawRGB(255, 0, 0);
-			bmpCanvas.drawColor(Color.WHITE);
-		}
+		bmpCanvas.drawColor(Color.WHITE);
 	}
 
 	public void SetColor(int color) {
@@ -146,6 +146,11 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 
 	public void SetSize(int size) {
 		paint.setStrokeWidth(size);
+	}
+
+	public void Undo() {
+		bmp = bmpUndo.copy(Bitmap.Config.ARGB_8888, true);
+		bmpCanvas = new Canvas(bmp);
 	}
 
 	@Override
