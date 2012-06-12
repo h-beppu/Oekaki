@@ -34,6 +34,9 @@ public class SettingActivity extends Activity implements SensorEventListener {
 	private Canvas bmpCanvas;
 	private final int BRUSH_SIZE = 4;
 
+	private Runnable looper;
+	private Thread thread;
+
 	// アクティビティが生成されたときに呼び出されるメソッド
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -115,6 +118,7 @@ public class SettingActivity extends Activity implements SensorEventListener {
 		findViewById(R.id.IvPensize4).setOnClickListener(ivPensizeListener);
 		findViewById(R.id.IvPensize16).setOnClickListener(ivPensizeListener);
 		findViewById(R.id.IvPensize32).setOnClickListener(ivPensizeListener);
+		findViewById(R.id.IvPensize100).setOnClickListener(ivPensizeListener);
 
 		// 色をタグとして登録
 		findViewById(R.id.IvPaletteBlack).setTag(Color.BLACK);
@@ -132,6 +136,25 @@ public class SettingActivity extends Activity implements SensorEventListener {
 		findViewById(R.id.IvPensize4).setTag(4);
 		findViewById(R.id.IvPensize16).setTag(16);
 		findViewById(R.id.IvPensize32).setTag(32);
+		findViewById(R.id.IvPensize100).setTag(100);
+
+		looper = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+
+				List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+				if(sensors.size() > 0) {
+					Sensor sensor = sensors.get(0);
+					boolean mRegisteredSensor = mSensorManager.registerListener(SettingActivity.this, sensor, SensorManager.SENSOR_DELAY_UI);
+				}
+
+				thread.stop();
+			}
+		};
 
 		//センサーサービス取得
 		mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -141,11 +164,8 @@ public class SettingActivity extends Activity implements SensorEventListener {
 	protected void onResume() {
 		super.onResume();
 
-		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
-		if(sensors.size() > 0) {
-			Sensor sensor = sensors.get(0);
-			boolean mRegisteredSensor = mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-		}
+		thread = new Thread(looper);
+		thread.start();
 	}
 
 	@Override

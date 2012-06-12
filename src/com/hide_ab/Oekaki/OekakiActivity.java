@@ -6,17 +6,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
 
 public class OekakiActivity extends Activity implements SensorEventListener {
@@ -40,11 +37,32 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 
 	int now_color, now_size;
 
+	private Runnable looper;
+	private Thread thread;
+
 	// アクティビティが生成されたときに呼び出されるメソッド
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
+
+		looper = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+				}
+
+				List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+				if(sensors.size() > 0) {
+					Sensor sensor = sensors.get(0);
+					boolean mRegisteredSensor = mSensorManager.registerListener(OekakiActivity.this, sensor, SensorManager.SENSOR_DELAY_UI);
+				}
+
+				thread.stop();
+			}
+		};
 
 		//センサーサービス取得
 		mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
@@ -54,11 +72,8 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 	protected void onResume() {
 		super.onResume();
 
-		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
-		if(sensors.size() > 0) {
-			Sensor sensor = sensors.get(0);
-			boolean mRegisteredSensor = mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
-		}
+		thread = new Thread(looper);
+		thread.start();
 	}
 
 	@Override
