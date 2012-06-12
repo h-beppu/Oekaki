@@ -7,6 +7,6 @@
 	<string name="label_black">くろ</string>
 	<string name="button_open">Open</string>
 	<string name="button_close">Close</string>
-	<string name="activity_animation_duration">300</string>
+	<string name="activity_animation_duration">150</string>
     <color name="bgcolor">#FFFFFF</color>
 </resources>

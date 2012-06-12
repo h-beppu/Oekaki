@@ -1,18 +1,32 @@
 package com.hide_ab.Oekaki;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
-public class SettingActivity extends Activity {
+public class SettingActivity extends Activity implements SensorEventListener {
+	//センサーマネージャー
+	private SensorManager mSensorManager;
+
+	private float[] currentOrientationValues  = {0.0f, 0.0f, 0.0f};
+	private float[] currentAccelerationValues = {0.0f, 0.0f, 0.0f};
+	private static final float SHAKE = 13.0f;//22.0f;
+
 	private int color;
 	private int size;
 	private Paint paint = null;			// 描画用
@@ -118,6 +132,61 @@ public class SettingActivity extends Activity {
 		findViewById(R.id.IvPensize4).setTag(4);
 		findViewById(R.id.IvPensize16).setTag(16);
 		findViewById(R.id.IvPensize32).setTag(32);
+
+		//センサーサービス取得
+		mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ACCELEROMETER);
+		if(sensors.size() > 0) {
+			Sensor sensor = sensors.get(0);
+			boolean mRegisteredSensor = mSensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_UI);
+		}
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		//センサーマネージャのリスナ登録破棄
+    	mSensorManager.unregisterListener(this);
+	}
+
+	public void onAccuracyChanged(Sensor sensor, int accuracy) {
+	}
+
+	/**
+	* センサーイベント
+	*/
+	@Override
+	public void onSensorChanged(SensorEvent event) {
+		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+			// 傾き(ハイカット)
+			currentOrientationValues[0] = event.values[0] * 0.1f + currentOrientationValues[0] * (1.0f - 0.1f);
+			currentOrientationValues[1] = event.values[1] * 0.1f + currentOrientationValues[1] * (1.0f - 0.1f);
+			currentOrientationValues[2] = event.values[2] * 0.1f + currentOrientationValues[2] * (1.0f - 0.1f);
+			// 加速度(ローカット)
+			currentAccelerationValues[0] = event.values[0] - currentOrientationValues[0];
+			currentAccelerationValues[1] = event.values[1] - currentOrientationValues[1];
+			currentAccelerationValues[2] = event.values[2] - currentOrientationValues[2];
+			// 振ってる？ 絶対値(あるいは2乗の平方根)の合計がいくつ以上か？
+			// 実装例
+			float targetValue = 
+				Math.abs(currentAccelerationValues[0]) + 
+				Math.abs(currentAccelerationValues[1]) +
+				Math.abs(currentAccelerationValues[2]);
+			if(targetValue > SHAKE) {
+				Intent intent = new Intent();
+				intent.putExtra("Color", color);
+				intent.putExtra("Size", size);
+				setResult(RESULT_OK, intent);
+				finish();
+			}
+		}
 	}
 
 	// ペン色設定

@@ -23,23 +23,16 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 	//センサーマネージャー
 	private SensorManager mSensorManager;
 
+	private float[] currentOrientationValues  = {0.0f, 0.0f, 0.0f};
+	private float[] currentAccelerationValues = {0.0f, 0.0f, 0.0f};
+	private static final float SHAKE = 13.0f;//22.0f;
+
 	private PictView pview = null;
 	// メニューアイテムID
 	private static final int
 		MENU_ITEM0 = 0,
 		MENU_ITEM1 = 1,
-		MENU_ITEM2 = 2,
-		MENU_ITEM3 = 3,
-		MENU_ITEM4 = 4;
-
-	// set default value
-	String[] str_colors = {"くろ", "しろ", "はいいろ", "あか", "みどり", "あお", "きいろ", "みずいろ", "むらさき"};
-	int[] colors = {Color.BLACK, Color.WHITE, Color.GRAY, Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.CYAN, Color.MAGENTA};
-	int result_color;
-
-	String[] str_sizes = {"とてもほそい", "ほそい", "ふつう", "ふとい", "とてもふとい"};
-	int[] sizes = {1, 2, 4, 16, 32};
-	int result_size;
+		MENU_ITEM2 = 2;
 
 	String[] str_modes = {"せん", "まる", "しかく"};
 	int[] modes = {PictView.MODE_LINE, PictView.MODE_CIRCLE, PictView.MODE_RECT};
@@ -51,20 +44,10 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-//		setContentView(new PictView(this));
 		setContentView(R.layout.main);
 
 		//センサーサービス取得
 		mSensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);
-
-		Button openBtn = (Button)findViewById(R.id.button_open);
-		openBtn.setOnClickListener(new OnClickListener(){
-			public void onClick(View v) {
-				Intent intent = new Intent(OekakiActivity.this, SettingActivity.class);
-	    		intent.putExtra("Color", now_color);
-	    		intent.putExtra("Size",  now_size);
-	    		startActivityForResult(intent, 0);
-			}});
 	}
 
 	@Override
@@ -82,7 +65,7 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 	protected void onPause() {
 		super.onPause();
 
-	    //センサーマネージャのリスナ登録破棄
+		//センサーマネージャのリスナ登録破棄
     	mSensorManager.unregisterListener(this);
 	}
 
@@ -95,19 +78,45 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 	@Override
 	public void onSensorChanged(SensorEvent event) {
 		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-			String str =
-			String.valueOf(event.values[0]) + ", " +
-			String.valueOf(event.values[1]) + ", " +
-			String.valueOf(event.values[2]);
+//			String str =
+//			String.valueOf(event.values[0]) + ", " +
+//			String.valueOf(event.values[1]) + ", " +
+//			String.valueOf(event.values[2]);
+//			TextView tv = (TextView)findViewById(R.id.text_sensor);
+//			tv.setText(str);
 
-			TextView tv = (TextView)findViewById(R.id.text_sensor);
-			tv.setText(str);
+/*
 			if(Math.abs(event.values[0]) > 5) {
 				Intent intent = new Intent(OekakiActivity.this, SettingActivity.class);
-	    		intent.putExtra("color", now_color);
-	    		intent.putExtra("size",  now_size);
-				startActivity(intent);
+				intent.putExtra("Color", now_color);
+				intent.putExtra("Size",  now_size);
+				startActivityForResult(intent, 0);
 			}
+*/
+			// 傾き(ハイカット)
+			currentOrientationValues[0] = event.values[0] * 0.1f + currentOrientationValues[0] * (1.0f - 0.1f);
+			currentOrientationValues[1] = event.values[1] * 0.1f + currentOrientationValues[1] * (1.0f - 0.1f);
+			currentOrientationValues[2] = event.values[2] * 0.1f + currentOrientationValues[2] * (1.0f - 0.1f);
+			// 加速度(ローカット)
+			currentAccelerationValues[0] = event.values[0] - currentOrientationValues[0];
+			currentAccelerationValues[1] = event.values[1] - currentOrientationValues[1];
+			currentAccelerationValues[2] = event.values[2] - currentOrientationValues[2];
+			// 振ってる？ 絶対値(あるいは2乗の平方根)の合計がいくつ以上か？
+			// 実装例
+			float targetValue = 
+				Math.abs(currentAccelerationValues[0]) + 
+				Math.abs(currentAccelerationValues[1]) +
+				Math.abs(currentAccelerationValues[2]);
+			if(targetValue > SHAKE) {
+				Intent intent = new Intent(OekakiActivity.this, SettingActivity.class);
+				intent.putExtra("Color", now_color);
+				intent.putExtra("Size",  now_size);
+				startActivityForResult(intent, 0);
+			}
+
+			String str = String.valueOf(targetValue);
+			TextView tv = (TextView)findViewById(R.id.text_sensor);
+			tv.setText(str);
 		}
 	}
 
@@ -117,14 +126,10 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 
 		MenuItem item0 = menu.add(Menu.NONE, MENU_ITEM0, Menu.NONE, "けす");
 		item0.setIcon(android.R.drawable.ic_menu_delete);
-		MenuItem item1 = menu.add(Menu.NONE, MENU_ITEM1, Menu.NONE, "いろ");
+		MenuItem item1 = menu.add(Menu.NONE, MENU_ITEM1, Menu.NONE, "かたち");
 		item1.setIcon(android.R.drawable.ic_menu_edit);
-		MenuItem item2 = menu.add(Menu.NONE, MENU_ITEM2, Menu.NONE, "ふとさ");
-		item2.setIcon(android.R.drawable.ic_menu_edit);
-		MenuItem item3 = menu.add(Menu.NONE, MENU_ITEM3, Menu.NONE, "かたち");
-		item3.setIcon(android.R.drawable.ic_menu_edit);
-		MenuItem item4 = menu.add(Menu.NONE, MENU_ITEM4, Menu.NONE, "もどす");
-		item4.setIcon(android.R.drawable.ic_menu_revert);
+		MenuItem item2 = menu.add(Menu.NONE, MENU_ITEM2, Menu.NONE, "もどす");
+		item2.setIcon(android.R.drawable.ic_menu_revert);
 
 		return true;
 	}
@@ -140,65 +145,6 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 				this.pview.Clear();
 				break;
 			case MENU_ITEM1:
-				// Single Choice Dialog
-				new AlertDialog.Builder(this)
-					.setIcon(R.drawable.icon)
-					.setTitle("いろをえらんでね")
-					.setSingleChoiceItems(str_colors, result_color,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-								result_color = which;
-							}
-						})
-					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-						/* OKボタンをクリックした時の処理 */
-						public void onClick(DialogInterface dialog, int whichButton) {
-							now_color = colors[result_color];
-							OekakiActivity.this.pview.SetColor(now_color);
-//							new AlertDialog.Builder(OekakiActivity.this)
-//								.setTitle("color=" + result_item)
-//								.show();
-						}
-					})
-					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-						/* Cancel ボタンをクリックした時の処理 */
-						public void onClick(DialogInterface dialog, int whichButton) {
-							new AlertDialog.Builder(OekakiActivity.this)
-								.setTitle("Canceled")
-								.show();
-						}
-					})
-					.show();
-				break;
-			case MENU_ITEM2:
-				// Single Choice Dialog
-				new AlertDialog.Builder(this)
-					.setIcon(R.drawable.icon)
-					.setTitle("ふとさをえらんでね")
-					.setSingleChoiceItems(str_sizes, result_size,
-						new DialogInterface.OnClickListener() {
-							public void onClick(DialogInterface dialog, int which) {
-								result_size = which;
-							}
-						})
-					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-						/* OKボタンをクリックした時の処理 */
-						public void onClick(DialogInterface dialog, int whichButton) {
-							now_size = sizes[result_size];
-							OekakiActivity.this.pview.SetSize(now_size);
-						}
-					})
-					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-						/* Cancel ボタンをクリックした時の処理 */
-						public void onClick(DialogInterface dialog, int whichButton) {
-//							new AlertDialog.Builder(OekakiActivity.this)
-//								.setTitle("Canceled")
-//								.show();
-						}
-					})
-					.show();
-				break;
-			case MENU_ITEM3:
 				// Single Choice Dialog
 				new AlertDialog.Builder(this)
 					.setIcon(R.drawable.icon)
@@ -226,7 +172,7 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 					})
 					.show();
 				break;
-			case MENU_ITEM4:
+			case MENU_ITEM2:
 				this.pview.Undo();
 				break;
 		}
