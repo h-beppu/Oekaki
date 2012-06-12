@@ -15,9 +15,11 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 
 public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Runnable, OnTouchListener {
-	private int type = 0;				// イベントのタイプ
-	private float posx = 0.0f;			// イベントが起きたX座標
-	private float posy = 0.0f;			// イベントが起きたY座標
+	private int type = 0;		// イベントのタイプ
+	private float posx = 0.0f;	// イベントが起きたX座標
+	private float posy = 0.0f;	// イベントが起きたY座標
+	private float bakx = 0.0f;	// 前回のX座標
+	private float baky = 0.0f;	// 前回のY座標
 	private final int REPEAT_INTERVAL = 50;
 	private final int BRUSH_SIZE = 4;
 
@@ -104,8 +106,14 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 				path.lineTo(posx, posy);
 				break;
 			case MotionEvent.ACTION_UP:		//最後のポイント
+				// 点を打つ
+				if((posx == bakx) && (posy == baky)) {
+					bmpCanvas.drawPoint(posx, posy, paint);
+				}
 				// ひとつ前のポイントから線を引く
-				path.lineTo(posx, posy);
+				else {
+					path.lineTo(posx, posy);
+				}
 				break;
 			default:
 				break;
@@ -116,7 +124,18 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 			bmpCanvas.drawPath(path, paint);
 		}
 
+		// 座標の保存
+		bakx = posx;
+		baky = posy;
+
 		return true;
+	}
+
+	public void Clear() {
+		// 描画バッファにパスを描画する
+		if(path != null) {
+			bmpCanvas.drawRGB(0, 0, 0);
+		}
 	}
 
 	@Override
