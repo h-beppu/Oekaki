@@ -4,13 +4,11 @@ import android.app.Activity;
 import android.os.Bundle;
 
 public class OekakiActivity extends Activity {
-	/** Called when the activity is first created. */
+	// アクティビティが生成されたときに呼び出されるメソッド
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		// 画面構成を適用
-		setContentView(R.layout.main);
 //		setContentView(new PictView(this));
+		setContentView(R.layout.main);
 	}
 }

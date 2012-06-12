@@ -8,70 +8,38 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.view.View.OnTouchListener;
 
-public class PictView extends View implements OnTouchListener {
-	private int type = 0;				//イベントのタイプ
-	private float posx = 0.0f;			//イベントが起きたX座標
-	private float posy = 0.0f;			//イベントが起きたY座標
-	private Path path = null;			//パス
-	private Bitmap bitmap = null;		//Viewの状態を保存するためのBitmap
+public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Runnable, OnTouchListener {
+	private int type = 0;				// イベントのタイプ
+	private float posx = 0.0f;			// イベントが起きたX座標
+	private float posy = 0.0f;			// イベントが起きたY座標
+
+	private Path path = null;			// パス
+
+	private Paint paint = null;			// 描画用
+
+	private Thread mainLoop = null;		// スレッドクラス
 
 	public PictView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+
+		// Touchに対するイベントハンドラを登録
 		setOnTouchListener(this);
-	}
 
-	public boolean onTouch(View view, MotionEvent event) {
-		type = event.getAction();	//イベントのタイプ
-		posx = event.getX();		//イベントが起きたX座標
-		posy = event.getY();		//イベントが起きたY座標
+		// SurfaceView描画に用いるコールバックを登録
+		getHolder().addCallback(this);
 
-		//イベントのタイプごとに処理を設定
-		switch(type){
-			case MotionEvent.ACTION_DOWN:	//最初のポイント
-				//パスを初期化
-				path = new Path();
-				//パスの始点へ移動
-				path.moveTo(posx, posy);
-				break;
-			case MotionEvent.ACTION_MOVE:	//途中のポイント
-				//ひとつ前のポイントから、線を引く
-				path.lineTo(posx, posy);
-				break;
-			case MotionEvent.ACTION_UP:		//最後のポイント
-				//ひとつ前のポイントから線を引く
-				path.lineTo(posx, posy);
-
-				//現在のViewをbitmapに保存する
-				view.setDrawingCacheEnabled(true);
-				bitmap = Bitmap.createBitmap(view.getDrawingCache());
-				view.setDrawingCacheEnabled(false);
-		}
-
-		//Viewを更新する
-		view.invalidate();
-
-		return true;
-	}
-
-	@Override
-	public void onDraw(Canvas canvas) {
-		super.onDraw(canvas);
-
-		//背景を白く塗りつぶす
-		canvas.drawColor(Color.WHITE);
-		if(bitmap != null) {
-			//保存してあるBitmapを描画する
-			canvas.drawBitmap(bitmap, 0, 0, null);
-		}
-
-		Paint paint = new Paint();
+		// 描画用の準備
+		paint = new Paint();
 		//アンチエイリアスを有効にする
 		paint.setAntiAlias(true);
 		//青色、透明度100
-		paint.setColor(Color.argb(100, 0, 0, 255));
+		paint.setColor(Color.WHITE);
+//		paint.setColor(Color.argb(100, 0, 0, 255));
 		//線のみ(塗りつぶさない)
 		paint.setStyle(Paint.Style.STROKE);
 		//線の太さ8
@@ -81,9 +49,65 @@ public class PictView extends View implements OnTouchListener {
 		//線のつなぎ目を丸くする
 		paint.setStrokeJoin(Paint.Join.ROUND);
 
-		if(path != null){
-			//パスを描画する
-			canvas.drawPath(path, paint);
+		// スレッド開始
+		mainLoop = new Thread(this);
+		mainLoop.start();
+	}
+
+	public boolean onTouch(View view, MotionEvent event) {
+		type = event.getAction();	//イベントのタイプ
+		posx = event.getX();		//イベントが起きたX座標
+		posy = event.getY();		//イベントが起きたY座標
+		return true;
+	}
+
+	@Override
+	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+		// TODO 今回は何もしない。
+	}
+
+	@Override
+	public void surfaceCreated(SurfaceHolder holder) {
+		// TODO 今回は何もしない。
+	}
+
+	@Override
+	public void surfaceDestroyed(SurfaceHolder holder) {
+		// TODO 今回は何もしない。
+	}
+
+	@Override
+	public void run() {
+		// Runnableインターフェースをimplementsしているので、runメソッドを実装する
+		// これは、Threadクラスのコンストラクタに渡すために用いる。
+		while (true) {
+			// Canvasの確保
+			Canvas canvas = getHolder().lockCanvas();
+			if(canvas != null) {
+				// イベントのタイプごとに処理を設定
+				switch(type){
+					case MotionEvent.ACTION_DOWN:	//最初のポイント
+						//パスを初期化
+						path = new Path();
+						//パスの始点へ移動
+						path.moveTo(posx, posy);
+						break;
+					case MotionEvent.ACTION_MOVE:	//途中のポイント
+						//ひとつ前のポイントから線を引く
+						path.lineTo(posx, posy);
+						break;
+					case MotionEvent.ACTION_UP:		//最後のポイント
+						//ひとつ前のポイントから線を引く
+						path.lineTo(posx, posy);
+						break;
+					default:
+						break;
+				}
+				// 描画
+				canvas.drawPath(path, paint);
+				// Canvasの解放
+				getHolder().unlockCanvasAndPost(canvas);
+			}
 		}
 	}
 }
