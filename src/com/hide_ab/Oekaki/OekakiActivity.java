@@ -45,6 +45,8 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 	int[] modes = {PictView.MODE_LINE, PictView.MODE_CIRCLE, PictView.MODE_RECT};
 	int result_mode;
 
+	int now_color, now_size;
+
 	// アクティビティが生成されたときに呼び出されるメソッド
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +61,9 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 		openBtn.setOnClickListener(new OnClickListener(){
 			public void onClick(View v) {
 				Intent intent = new Intent(OekakiActivity.this, SettingActivity.class);
-				startActivity(intent);
+	    		intent.putExtra("Color", now_color);
+	    		intent.putExtra("Size",  now_size);
+	    		startActivityForResult(intent, 0);
 			}});
 	}
 
@@ -100,6 +104,8 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 			tv.setText(str);
 			if(Math.abs(event.values[0]) > 5) {
 				Intent intent = new Intent(OekakiActivity.this, SettingActivity.class);
+	    		intent.putExtra("color", now_color);
+	    		intent.putExtra("size",  now_size);
 				startActivity(intent);
 			}
 		}
@@ -147,8 +153,8 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 						/* OKボタンをクリックした時の処理 */
 						public void onClick(DialogInterface dialog, int whichButton) {
-							int color = colors[result_color];
-							OekakiActivity.this.pview.SetColor(color);
+							now_color = colors[result_color];
+							OekakiActivity.this.pview.SetColor(now_color);
 //							new AlertDialog.Builder(OekakiActivity.this)
 //								.setTitle("color=" + result_item)
 //								.show();
@@ -178,8 +184,8 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 					.setPositiveButton("OK", new DialogInterface.OnClickListener() {
 						/* OKボタンをクリックした時の処理 */
 						public void onClick(DialogInterface dialog, int whichButton) {
-							int size = sizes[result_size];
-							OekakiActivity.this.pview.SetSize(size);
+							now_size = sizes[result_size];
+							OekakiActivity.this.pview.SetSize(now_size);
 						}
 					})
 					.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -226,5 +232,27 @@ public class OekakiActivity extends Activity implements SensorEventListener {
 		}
 
 		return true;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+//		if(requestCode == REQUEST_CODE) {
+//			Log.d(TAG, "requestCode = " + requestCode);
+//		}
+
+//		if(resultCode == RESULT_OK) {
+//			Log.d(TAG, "resultCode = " + resultCode);
+//		}
+
+		if(intent != null) {
+			if(this.pview == null) {
+				this.pview = (PictView)findViewById(R.id.vw_canvas);
+			}
+
+			now_color = intent.getIntExtra("Color", now_color);
+			now_size  = intent.getIntExtra("Size",  now_size);
+			this.pview.SetColor(now_color);
+			this.pview.SetSize(now_size);
+		}
 	}
 }

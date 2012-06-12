@@ -2,23 +2,126 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
 	android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
+	android:layout_height="fill_parent"
+    android:background="@color/bgcolor">
 	<Button
 		android:id="@+id/button_close"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="@string/button_close"
-    	android:layout_gravity="center" />
-	<Button
-		android:id="@+id/button_red"
+		android:layout_gravity="center" />
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="1">
+		<ImageView
+			android:id="@+id/IvPaletteBlack"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_black" />
+		<ImageView
+			android:id="@+id/IvPaletteWhite"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_white" />
+		<ImageView
+			android:id="@+id/IvPaletteGray"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_gray" />
+		<ImageView
+			android:id="@+id/IvPaletteRed"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_red" />
+		<ImageView
+			android:id="@+id/IvPaletteGreen"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_green" />
+		<ImageView
+			android:id="@+id/IvPaletteBlue"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_blue" />
+		<ImageView
+			android:id="@+id/IvPaletteYellow"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_yellow" />
+		<ImageView
+			android:id="@+id/IvPaletteCyan"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_cyan" />
+		<ImageView
+			android:id="@+id/IvPaletteMagenta"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/palette_magenta" />
+	</LinearLayout>
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="fill_parent"
+		android:layout_weight="1">
+		<ImageView
+			android:id="@+id/IvPensize1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/pensize_1" />
+		<ImageView
+			android:id="@+id/IvPensize2"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/pensize_2" />
+		<ImageView
+			android:id="@+id/IvPensize4"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/pensize_4" />
+		<ImageView
+			android:id="@+id/IvPensize16"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/pensize_16" />
+		<ImageView
+			android:id="@+id/IvPensize32"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginRight="6dip"
+			android:layout_gravity="center_vertical|left"
+			android:src="@drawable/pensize_32" />
+	</LinearLayout>
+	<ImageView
+		android:id="@+id/IvPenSample"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="@string/label_red"
-    	android:layout_gravity="center" />
-	<Button
-		android:id="@+id/button_black"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/label_black"
-    	android:layout_gravity="center" />
+		android:layout_marginRight="6dip"
+		android:layout_gravity="center_vertical|left" />
 </LinearLayout>

@@ -64,10 +64,10 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 		// 黒色、透明度100
 		paint.setColor(Color.BLACK);
 //		paint.setColor(Color.argb(100, 0, 0, 255));
-		// 線のみ(塗りつぶさない)
-		paint.setStyle(Paint.Style.STROKE);
 		// 線の太さ
 		paint.setStrokeWidth(BRUSH_SIZE);
+		// 線のみ(塗りつぶさない)
+		paint.setStyle(Paint.Style.STROKE);
 		// 線の両端を丸くする
 		paint.setStrokeCap(Paint.Cap.ROUND);
 		// 線のつなぎ目を丸くする
@@ -77,13 +77,13 @@ public class PictView extends  SurfaceView implements SurfaceHolder.Callback, Ru
 		paint2 = new Paint();
 		// アンチエイリアスを有効にする
 		paint2.setAntiAlias(true);
-		// 黒色、透明度100
+		// 透明度0
 		paint2.setColor(Color.TRANSPARENT);
 		paint2.setAlpha(0);
-		// 線のみ(塗りつぶさない)
-		paint2.setStyle(Paint.Style.STROKE);
 		// 線の太さ
 		paint2.setStrokeWidth(BRUSH_SIZE);
+		// 線のみ(塗りつぶさない)
+		paint2.setStyle(Paint.Style.STROKE);
 		// 線の両端を丸くする
 		paint2.setStrokeCap(Paint.Cap.ROUND);
 		// 線のつなぎ目を丸くする
